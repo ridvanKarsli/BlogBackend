@@ -1,0 +1,403 @@
+# BLOG SİSTEMİ BACKEND RAPORU
+
+## Teknoloji Stack
+
+### Dil: Java 21
+### Framework: Spring Boot 3
+### Build Tool: Maven
+### ORM: Hibernate
+### Repository Katmanı: Spring Data JPA
+### Database: PostgreSQL
+### Migration: Flyway
+### Authentication: Spring Security
+### Authorization: JWT + HttpOnly Cookie
+### API Dokümantasyonu: Swagger/OpenAPI
+### Arama: Elasticsearch
+### Dosya Depolama: MinIO / Cloudflare R2
+### Container: Docker
+
+---
+
+# Proje Yapısı
+
+src/main/java/com/ridvankarsli/blog
+controller
+service
+repository
+entity
+dto
+security
+config
+exception
+mapper
+util
+
+---
+
+# Entity Sınıfları
+
+## BaseEntity
+Tüm entityler bunu extend edecek.
+Alanlar:
+id
+createdAt
+updatedAt
+
+---
+
+## User
+Amaç: Admin kullanıcılarını tutmak.
+Alanlar:
+id
+email
+password
+role
+createdAt
+updatedAt
+Role:
+ADMIN
+EDITOR
+
+---
+
+## Post
+Amaç: Blog yazıları.
+Alanlar:
+id
+title
+slug
+content
+excerpt
+seoTitle
+seoDescription
+canonicalUrl
+ogImage
+status
+publishedAt
+author
+createdAt
+updatedAt
+Status:
+DRAFT
+PUBLISHED
+
+İlişkiler:
+ManyToOne User
+ManyToMany Category
+ManyToMany Tag
+
+---
+
+## Category
+Amaç: Blog kategorileri.
+Alanlar:
+id
+name
+slug
+createdAt
+updatedAt
+
+İlişkiler:
+ManyToMany Post
+
+---
+
+## Tag
+Amaç: Etiketler.
+Alanlar:
+id
+name
+slug
+createdAt
+updatedAt
+
+İlişkiler:
+ManyToMany Post
+
+---
+
+## Media
+Amaç: Yüklenen görseller.
+Alanlar:
+id
+fileName
+fileUrl
+mimeType
+fileSize
+uploadedBy
+createdAt
+updatedAt
+
+İlişkiler:
+ManyToOne User
+
+---
+
+# Veritabanı Tabloları
+users
+posts
+categories
+tags
+media
+post_categories
+post_tags
+flyway_schema_history
+
+---
+
+# Controller Katmanı
+
+## AuthController
+POST /api/auth/login
+POST /api/auth/logout
+GET /api/auth/me
+
+---
+
+## PostController
+GET /api/posts
+GET /api/posts/{slug}
+POST /api/admin/posts
+PUT /api/admin/posts/{id}
+DELETE /api/admin/posts/{id}
+
+---
+
+## CategoryController
+GET /api/categories
+POST /api/admin/categories
+PUT /api/admin/categories/{id}
+DELETE /api/admin/categories/{id}
+
+---
+
+## TagController
+GET /api/tags
+POST /api/admin/tags
+PUT /api/admin/tags/{id}
+DELETE /api/admin/tags/{id}
+
+---
+
+## MediaController
+POST /api/admin/media/upload
+DELETE /api/admin/media/{id}
+GET /api/admin/media
+
+---
+
+## SearchController
+GET /api/search?q=keyword
+
+---
+
+## SitemapController
+GET /sitemap.xml
+
+---
+
+# Service Katmanı
+
+## AuthService
+login()
+logout()
+getCurrentUser()
+
+---
+
+## PostService
+createPost()
+updatePost()
+deletePost()
+publishPost()
+saveDraft()
+getPostBySlug()
+getAllPosts()
+
+---
+
+## CategoryService
+createCategory()
+updateCategory()
+deleteCategory()
+getAllCategories()
+
+---
+
+## TagService
+createTag()
+updateTag()
+deleteTag()
+getAllTags()
+
+---
+
+## MediaService
+upload()
+delete()
+list()
+
+---
+
+## SearchService
+indexPost()
+deleteIndex()
+search()
+
+---
+
+# Repository Katmanı
+UserRepository
+PostRepository
+CategoryRepository
+TagRepository
+MediaRepository
+
+---
+
+# DTO Katmanı
+
+## Auth DTO
+LoginRequest
+LoginResponse
+CurrentUserResponse
+
+---
+
+## Post DTO
+CreatePostRequest
+UpdatePostRequest
+PostResponse
+PostListResponse
+
+---
+
+## Category DTO
+CreateCategoryRequest
+UpdateCategoryRequest
+CategoryResponse
+
+---
+
+## Tag DTO
+CreateTagRequest
+UpdateTagRequest
+TagResponse
+
+---
+
+## Media DTO
+UploadMediaResponse
+MediaResponse
+
+---
+
+# Security
+
+## Spring Security
+JWT doğrulama
+Role bazlı yetkilendirme
+HttpOnly Cookie
+Authentication Filter
+Security Config
+UserDetailsService
+Password Encoder
+
+---
+
+# Flyway
+
+Klasör: resources/db/migration
+
+Migrationlar:
+V1__create_users.sql
+V2__create_posts.sql
+V3__create_categories.sql
+V4__create_tags.sql
+V5__create_post_categories.sql
+V6__create_post_tags.sql
+V7__create_media.sql
+
+---
+
+# Elasticsearch
+
+Index: posts
+
+Alanlar:
+id
+title
+content
+excerpt
+categories
+tags
+publishedAt
+
+Arama:
+title
+content
+excerpt
+
+---
+
+# SEO
+
+Her yazıda bulunacak:
+seoTitle
+seoDescription
+canonicalUrl
+ogImage
+slug
+
+---
+
+# Slug Kuralları
+
+Örnek:
+Spring Boot Öğreniyorum
+↓
+spring-boot-ogreniyorum
+Slug benzersiz olmalıdır.
+
+---
+
+# Sitemap
+
+Kaynaklar:
+Yayınlanmış yazılar
+Kategoriler
+Etiketler
+URL:
+/sitemap.xml
+
+---
+
+# Docker
+
+Containerlar:
+blog-backend
+postgres
+elasticsearch
+minio
+
+---
+
+# Geliştirme Sırası
+
+1. PostgreSQL kurulumu (yapıldı)
+2. Flyway kurulumu (yapıldı)
+3. Entity sınıfları (yapıldı)
+4. Repository katmanı (yapıldı)
+5. Security kurulumu (yapıldı)
+6. JWT sistemi (yapıldı)
+7. Auth API
+8. Post CRUD
+9. Category CRUD
+10. Tag CRUD
+11. Media Upload
+12. Elasticsearch
+13. Sitemap
+14. Swagger
+15. Docker
+16. Production Deploy
+
