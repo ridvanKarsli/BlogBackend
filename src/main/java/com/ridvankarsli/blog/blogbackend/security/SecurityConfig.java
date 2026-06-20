@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/tags", "/api/tags/**").permitAll()
                         .requestMatchers("/api/search").permitAll()
                         .requestMatchers("/sitemap.xml").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         // Admin ve Editörlere Özel İstekler (Sadece yetkisi olanlar)
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "EDITOR")
                         // Geri kalan her istek kimlik doğrulaması (Token) gerektirsin
