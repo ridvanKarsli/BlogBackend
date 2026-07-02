@@ -25,15 +25,4 @@ public class TagController {
     public ResponseEntity<Tag> getTagBySlug(@PathVariable String slug) {
         return ResponseEntity.ok(tagService.getTagBySlug(slug));
     }
-
-    @PostMapping
-    public ResponseEntity<Tag> createTag(@RequestBody TagRequest request) {
-        return ResponseEntity.ok(tagService.createTag(request));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable Long id) {
-        tagService.deleteTag(id);
-        return ResponseEntity.ok("Etiket silindi.");
-    }
 }

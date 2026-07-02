@@ -3,6 +3,7 @@ package com.ridvankarsli.blog.blogbackend.controller;
 import com.ridvankarsli.blog.blogbackend.dto.AuthResponse;
 import com.ridvankarsli.blog.blogbackend.dto.LoginRequest;
 import com.ridvankarsli.blog.blogbackend.dto.RegisterRequest;
+import com.ridvankarsli.blog.blogbackend.dto.UserResponse;
 import com.ridvankarsli.blog.blogbackend.security.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,11 @@ public class AuthController {
 
     @Value("${jwt.cookie-name}")
     private String cookieName;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> me() {
+        return ResponseEntity.ok(authService.getCurrentUser());
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {

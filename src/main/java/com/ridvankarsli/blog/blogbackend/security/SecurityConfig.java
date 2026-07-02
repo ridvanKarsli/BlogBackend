@@ -3,6 +3,7 @@ package com.ridvankarsli.blog.blogbackend.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -25,14 +27,13 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final CorsConfigurationSource corsConfigurationSource;
 
-    // 1. Şifreleri (Password) geri döndürülemez şekilde kriptolayan araç (BCrypt)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 2. Veritabanından kullanıcıyı ve kriptolanmış şifresini okuyup doğrulamayı yapan sağlayıcı
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -41,43 +42,31 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    // 3. AuthController'da login işlemi yaparken kullanacağımız ana yönetici
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // 4. Sistemin asıl güvenlik kurallarının yazıldığı Filtre Zinciri (Security Filter Chain)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF korumasını kapatıyoruz (JWT kullandığımız için gerek yok)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // Kimlerin nereye girebileceğini belirliyoruz
                 .authorizeHttpRequests(auth -> auth
-                        // Herkese Açık Olan İstekler (Login, Arama, Anasayfa Postları vs.)
-                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers("/api/posts", "/api/posts/**").permitAll()
-                        .requestMatchers("/api/categories", "/api/categories/**").permitAll()
-                        .requestMatchers("/api/tags", "/api/tags/**").permitAll()
-                        .requestMatchers("/api/search").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/tags", "/api/tags/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/search").permitAll()
                         .requestMatchers("/sitemap.xml").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
-                        // Admin ve Editörlere Özel İstekler (Sadece yetkisi olanlar)
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/uploads/**", "/media/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "EDITOR")
-                        // Geri kalan her istek kimlik doğrulaması (Token) gerektirsin
+                        .requestMatchers("/api/media/**").hasAnyRole("ADMIN", "EDITOR")
                         .anyRequest().authenticated()
                 )
-
-                // Oturum yönetimini STATELESS (Durumsuz) yapıyoruz.
-                // Yani Spring Security hafızada kullanıcı tutmayacak, her istekte token soracak.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // AuthenticationProvider'ı sisteme tanıtıyoruz
                 .authenticationProvider(authenticationProvider())
-
-                // Kendi yazdığımız JWT filtresini, Spring'in varsayılan şifre sorma filtresinden HEMEN ÖNCE devreye sokuyoruz
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

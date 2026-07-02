@@ -25,15 +25,4 @@ public class CategoryController {
     public ResponseEntity<Category> getCategoryBySlug(@PathVariable String slug) {
         return ResponseEntity.ok(categoryService.getCategoryBySlug(slug));
     }
-
-    @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody CategoryRequest request) {
-        return ResponseEntity.ok(categoryService.createCategory(request));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.ok("Kategori silindi.");
-    }
 }

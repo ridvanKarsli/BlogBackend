@@ -1,5 +1,6 @@
 package com.ridvankarsli.blog.blogbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "media")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Media extends BaseEntity {
 
     @Column(name = "file_name", nullable = false)

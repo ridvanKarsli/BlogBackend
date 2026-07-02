@@ -1,5 +1,7 @@
 package com.ridvankarsli.blog.blogbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "tags")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Tag extends BaseEntity {
 
     @Column(nullable = false)
@@ -21,6 +24,7 @@ public class Tag extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String slug;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "tags")
     private Set<Post> posts = new HashSet<>();
 }

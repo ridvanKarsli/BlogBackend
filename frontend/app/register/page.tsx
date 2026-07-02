@@ -1,0 +1,136 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { BookOpen, UserPlus } from 'lucide-react'
+import apiClient from '@/lib/apiClient'
+import { useAuth } from '@/lib/authContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+
+export default function RegisterPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const { login } = useAuth()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+    setLoading(true)
+    if (!email.includes('@')) {
+      setError('Geçerli bir e-posta giriniz')
+      setLoading(false)
+      return
+    }
+    if (password.length < 6) {
+      setError('Şifre en az 6 karakter olmalıdır')
+      setLoading(false)
+      return
+    }
+    try {
+      await apiClient.post('/api/auth/register', { email, password })
+      try {
+        await login(email, password)
+        router.push('/admin')
+        return
+      } catch {
+        setSuccess('Kayıt başarılı. Giriş sayfasına yönlendiriliyorsunuz...')
+        setTimeout(() => router.push('/login'), 1300)
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Kayıt başarısız')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex min-h-screen">
+      <div className="hidden w-1/2 flex-col justify-between bg-gradient-to-br from-violet-600 via-brand-700 to-brand-800 p-12 text-white lg:flex">
+        <Link href="/" className="flex items-center gap-2.5 font-display text-xl font-bold">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur">
+            <BookOpen className="h-5 w-5" />
+          </span>
+          Blog
+        </Link>
+        <div>
+          <h2 className="font-display text-3xl font-bold leading-tight">
+            Topluluğa<br />katılın
+          </h2>
+          <p className="mt-4 max-w-sm text-brand-100">
+            Ücretsiz hesap oluşturun ve kendi içeriklerinizi paylaşmaya başlayın.
+          </p>
+        </div>
+        <p className="text-sm text-brand-200">© {new Date().getFullYear()} Blog</p>
+      </div>
+
+      <div className="flex flex-1 items-center justify-center bg-surface-muted px-6 py-12">
+        <div className="w-full max-w-md animate-slide-up">
+          <div className="mb-8 text-center lg:text-left">
+            <div className="mb-4 flex justify-center lg:hidden">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-600 text-white">
+                <BookOpen className="h-6 w-6" />
+              </span>
+            </div>
+            <h1 className="font-display text-2xl font-bold text-slate-900">Hesap oluştur</h1>
+            <p className="mt-2 text-sm text-slate-500">Birkaç saniyede kayıt olun</p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-card">
+            {error && (
+              <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {success}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Input
+                type="email"
+                label="E-posta"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="ornek@email.com"
+                required
+              />
+              <Input
+                type="password"
+                label="Şifre"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="En az 6 karakter"
+                hint="En az 6 karakter kullanın"
+                required
+              />
+              <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                <UserPlus className="h-4 w-4" />
+                {loading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
+              </Button>
+            </form>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-slate-500">
+            Zaten hesabınız var mı?{' '}
+            <Link href="/login" className="font-medium text-brand-600 hover:text-brand-700">
+              Giriş yapın
+            </Link>
+          </p>
+          <p className="mt-3 text-center">
+            <Link href="/" className="text-sm text-slate-400 hover:text-slate-600">
+              ← Ana sayfaya dön
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}

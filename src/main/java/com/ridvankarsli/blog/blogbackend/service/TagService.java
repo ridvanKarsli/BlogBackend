@@ -31,7 +31,20 @@ public class TagService {
                 .orElseThrow(() -> new RuntimeException("Etiket bulunamadı!"));
     }
 
+    public Tag getTagById(Long id) {
+        return tagRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Etiket bulunamadı!"));
+    }
+
     public void deleteTag(Long id) {
         tagRepository.deleteById(id);
+    }
+
+    public Tag updateTag(Long id, com.ridvankarsli.blog.blogbackend.dto.TagRequest request) {
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Güncellenecek etiket bulunamadı!"));
+        tag.setName(request.getName());
+        tag.setSlug(com.ridvankarsli.blog.blogbackend.util.SlugUtil.makeSlug(request.getName()));
+        return tagRepository.save(tag);
     }
 }

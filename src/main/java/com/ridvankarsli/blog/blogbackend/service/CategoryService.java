@@ -31,7 +31,20 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Kategori bulunamadı!"));
     }
 
+    public Category getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Kategori bulunamadı!"));
+    }
+
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    public Category updateCategory(Long id, com.ridvankarsli.blog.blogbackend.dto.CategoryRequest request) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Güncellenecek kategori bulunamadı!"));
+        category.setName(request.getName());
+        category.setSlug(com.ridvankarsli.blog.blogbackend.util.SlugUtil.makeSlug(request.getName()));
+        return categoryRepository.save(category);
     }
 }

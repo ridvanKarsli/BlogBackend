@@ -2,11 +2,14 @@ package com.ridvankarsli.blog.blogbackend.security;
 
 import com.ridvankarsli.blog.blogbackend.dto.LoginRequest;
 import com.ridvankarsli.blog.blogbackend.dto.RegisterRequest;
+import com.ridvankarsli.blog.blogbackend.dto.UserResponse;
 import com.ridvankarsli.blog.blogbackend.entity.User;
 import com.ridvankarsli.blog.blogbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +33,19 @@ public class AuthService {
         // Şifreyi veritabanına kaydetmeden önce BCrypt ile şifreliyoruz (Çok önemli!)
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Şimdilik gelen rolü atıyoruz, gerçek bir projede bunu enum ile veya varsayılan EDITOR ile kontrol edebiliriz
-        user.setRole(request.getRole() != null ? request.getRole().toUpperCase() : "EDITOR");
+        user.setRole("EDITOR");
 
         userRepository.save(user);
+    }
+
+    public UserResponse getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principal instanceof UserDetails userDetails)) {
+            throw new RuntimeException("Kimlik doğrulaması gerekli!");
+        }
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+        return new UserResponse(user.getId(), user.getEmail(), user.getRole());
     }
 
     // Giriş Yapma İşlemi
