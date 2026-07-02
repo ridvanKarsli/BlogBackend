@@ -43,17 +43,15 @@ public class Post extends BaseEntity {
     private String ogImage;
 
     @Column(nullable = false)
-    private String status; // DRAFT, PUBLISHED
+    private String status;
 
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
-    // Yazar İlişkisi
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
-    // Kategori İlişkisi (Ara Tablo Yönetimi)
     @ManyToMany
     @JoinTable(
             name = "post_categories",
@@ -62,7 +60,6 @@ public class Post extends BaseEntity {
     )
     private Set<Category> categories = new HashSet<>();
 
-    // Etiket İlişkisi (Ara Tablo Yönetimi)
     @ManyToMany
     @JoinTable(
             name = "post_tags",

@@ -26,7 +26,6 @@ public class Media extends BaseEntity {
     @Column(name = "file_size")
     private Long fileSize;
 
-    // Yükleyen Kullanıcı İlişkisi
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by", nullable = false)
     private User uploadedBy;

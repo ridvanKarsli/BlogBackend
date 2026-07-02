@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-// Storage is delegated to StorageService
-
 @Service
 @RequiredArgsConstructor
 public class MediaService {
@@ -24,13 +22,11 @@ public class MediaService {
         try {
             String url = storageService.store(file);
 
-            // 4. İsteği atan kullanıcıyı Security Context'ten bul
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String email = ((UserDetails) principal).getUsername();
             User uploader = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+                    .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı."));
 
-            // 5. Veritabanına Media kaydını ekle
             Media media = new Media();
             media.setFileName(file.getOriginalFilename());
             media.setFileUrl(url);
@@ -39,9 +35,8 @@ public class MediaService {
             media.setUploadedBy(uploader);
 
             return mediaRepository.save(media);
-
         } catch (Exception e) {
-            throw new RuntimeException("Dosya yüklenirken hata oluştu: " + e.getMessage());
+            throw new RuntimeException("Dosya yüklenemedi: " + e.getMessage());
         }
     }
 
@@ -51,7 +46,7 @@ public class MediaService {
 
     public void deleteMedia(Long id) {
         Media media = mediaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Silinecek medya bulunamadı!"));
+                .orElseThrow(() -> new RuntimeException("Medya bulunamadı."));
 
         try {
             storageService.delete(media.getFileUrl());

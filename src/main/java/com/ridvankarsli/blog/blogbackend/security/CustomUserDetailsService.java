@@ -19,12 +19,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // 1. Veritabanından email ile kullanıcıyı arıyoruz. Bulamazsa hata fırlatıyoruz.
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + email));
 
-        // 2. Kendi User nesnemizi, Spring Security'nin anladığı UserDetails nesnesine dönüştürüyoruz.
-        // Not: Spring Security rollerin başında genelde "ROLE_" takısı arar (Örn: ROLE_ADMIN).
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),

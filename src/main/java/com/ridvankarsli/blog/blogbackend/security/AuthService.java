@@ -22,17 +22,14 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    // Kayıt Olma İşlemi
     public void register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Bu email adresi zaten kullanımda!");
+            throw new RuntimeException("Bu e-posta zaten kayıtlı.");
         }
 
         User user = new User();
         user.setEmail(request.getEmail());
-        // Şifreyi veritabanına kaydetmeden önce BCrypt ile şifreliyoruz (Çok önemli!)
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
         user.setRole("EDITOR");
 
         userRepository.save(user);
@@ -41,22 +38,17 @@ public class AuthService {
     public UserResponse getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof UserDetails userDetails)) {
-            throw new RuntimeException("Kimlik doğrulaması gerekli!");
+            throw new RuntimeException("Giriş yapmanız gerekiyor.");
         }
         User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı."));
         return new UserResponse(user.getId(), user.getEmail(), user.getRole());
     }
 
-    // Giriş Yapma İşlemi
     public String login(LoginRequest request) {
-        // Spring Security bu satırda gidip veritabanındaki şifre ile kullanıcının girdiği şifreyi kıyaslar.
-        // Yanlışsa direkt Exception fırlatır, aşağıya inmez.
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-
-        // Her şey doğruysa token üret ve geri dön
         return jwtUtil.generateToken(request.getEmail());
     }
 }

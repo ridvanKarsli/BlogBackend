@@ -20,7 +20,7 @@ export const metadata = {
     default: 'Blog',
     template: '%s | Blog',
   },
-  description: 'Fikirler, hikayeler ve içgörüler — modern blog deneyimi.',
+  description: 'Blog yazıları',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

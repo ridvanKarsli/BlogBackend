@@ -1,19 +1,19 @@
-# Blog Frontend
+# Frontend
 
-Next.js + TypeScript + Tailwind scaffold for BlogBackend.
+Next.js + TypeScript + Tailwind CSS blog arayüzü.
 
-Quick start:
+## Geliştirme
 
 ```bash
-cd frontend
 npm install
+cp .env.local.example .env.local
 npm run dev
 ```
 
-Environment:
-- `NEXT_PUBLIC_API_BASE` set backend base URL (e.g. `http://localhost:8080`)
+`NEXT_PUBLIC_API_BASE=http://localhost:8080` (yerel backend için).
 
-Next steps:
-- Run `npx shadcn-ui@latest init` inside `frontend` to add shadcn/ui components (optional).
-- Implement login/logout using backend `/api/auth` endpoints (HttpOnly cookie used by backend).
-- Build admin pages and connect to API using `axios` or `swr`.
+## Docker
+
+Ana dizindeki `docker compose up --build` komutu frontend'i de başlatır. Docker ortamında `NEXT_PUBLIC_API_BASE` boş bırakılır; istekler Nginx üzerinden backend'e gider.
+
+Detaylı bilgi için kök dizindeki [README.md](../README.md) dosyasına bakın.

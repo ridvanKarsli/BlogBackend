@@ -61,10 +61,10 @@ export default function RegisterPage() {
         </Link>
         <div>
           <h2 className="font-display text-3xl font-bold leading-tight">
-            Topluluğa<br />katılın
+            Kayıt
           </h2>
           <p className="mt-4 max-w-sm text-brand-100">
-            Ücretsiz hesap oluşturun ve kendi içeriklerinizi paylaşmaya başlayın.
+            Yeni hesap açıp yazı yazmaya başlayabilirsin.
           </p>
         </div>
         <p className="text-sm text-brand-200">© {new Date().getFullYear()} Blog</p>

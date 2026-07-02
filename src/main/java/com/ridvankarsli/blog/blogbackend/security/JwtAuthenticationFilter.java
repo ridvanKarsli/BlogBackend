@@ -26,36 +26,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
-            // 1. İstekteki Cookie'den token'ı alıyoruz
             String jwt = jwtUtil.getJwtFromCookies(request);
 
-            // 2. Token var mı ve geçerli mi kontrol ediyoruz
             if (jwt != null && jwtUtil.validateToken(jwt)) {
-
-                // 3. Token'ın içinden kullanıcının emailini çıkarıyoruz
                 String email = jwtUtil.extractEmail(jwt);
-
-                // 4. Email ile kullanıcıyı ve yetkilerini (Role) buluyoruz
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                // 5. Spring Security'e özel "Kimlik Doğrulandı" kartını hazırlıyoruz
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null, // Şifreyi buraya koymuyoruz, güvenlik için null geçiyoruz
-                                userDetails.getAuthorities()
-                        );
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // 6. Bu kartı SecurityContext'e (sistemin beynine) yerleştiriyoruz
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            logger.error("Kullanıcı kimlik doğrulaması yapılamadı: {}", e);
+            logger.error("JWT doğrulama hatası: {}", e);
         }
 
-        // 7. Her şey tamamsa filtre zincirine devam et (isteği Controller'a yolla)
         filterChain.doFilter(request, response);
     }
 }

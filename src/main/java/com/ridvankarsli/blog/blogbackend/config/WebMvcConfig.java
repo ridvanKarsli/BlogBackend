@@ -9,7 +9,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // "/uploads/**" url'sine gelen istekleri projenin kök dizinindeki "uploads" klasörüne yönlendir
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
     }

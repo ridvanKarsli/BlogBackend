@@ -15,7 +15,6 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // application.properties dosyasından ayarlarımızı çekiyoruz
     @Value("${jwt.secret}")
     private String secret;
 
@@ -25,13 +24,11 @@ public class JwtUtil {
     @Value("${jwt.cookie-name}")
     private String cookieName;
 
-    // Şifreleme anahtarımızı oluşturuyoruz (jjwt 0.12.x formatı)
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Başarılı giriş sonrası Token üretme
     public String generateToken(String email) {
         return Jwts.builder()
                 .subject(email)
@@ -41,12 +38,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Token içinden kullanıcı emailini okuma
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    // Token'ın geçerli ve bize ait olup olmadığını doğrulama
     public boolean validateToken(String token) {
         try {
             extractAllClaims(token);
@@ -56,7 +51,6 @@ public class JwtUtil {
         }
     }
 
-    // Token'ı parçalayıp içindeki verilere (Claims) ulaşma
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -65,7 +59,6 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    // Gelen HTTP isteğindeki çerezlerden (Cookie) bizim token'ı bulma
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {

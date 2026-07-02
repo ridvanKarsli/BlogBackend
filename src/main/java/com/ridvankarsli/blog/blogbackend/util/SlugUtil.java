@@ -12,7 +12,6 @@ public class SlugUtil {
     public static String makeSlug(String input) {
         if (input == null) return "";
 
-        // Türkçe karakterleri düzelt (Örn: ş -> s, ı -> i)
         input = input.replace("ı", "i").replace("İ", "I")
                 .replace("ğ", "g").replace("Ğ", "G")
                 .replace("ü", "u").replace("Ü", "U")

@@ -42,7 +42,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      {/* Left branding panel */}
       <div className="hidden w-1/2 flex-col justify-between bg-gradient-to-br from-brand-600 via-brand-700 to-violet-800 p-12 text-white lg:flex">
         <Link href="/" className="flex items-center gap-2.5 font-display text-xl font-bold">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur">
@@ -52,16 +51,15 @@ export default function LoginPage() {
         </Link>
         <div>
           <h2 className="font-display text-3xl font-bold leading-tight">
-            İçeriklerinizi<br />kolayca yönetin
+            Admin paneli
           </h2>
           <p className="mt-4 max-w-sm text-brand-100">
-            Yazılarınızı oluşturun, düzenleyin ve yayınlayın. Hepsi tek bir admin panelinde.
+            Yazı eklemek ve düzenlemek için giriş yap.
           </p>
         </div>
         <p className="text-sm text-brand-200">© {new Date().getFullYear()} Blog</p>
       </div>
 
-      {/* Right form */}
       <div className="flex flex-1 items-center justify-center bg-surface-muted px-6 py-12">
         <div className="w-full max-w-md animate-slide-up">
           <div className="mb-8 text-center lg:text-left">
@@ -70,8 +68,8 @@ export default function LoginPage() {
                 <BookOpen className="h-6 w-6" />
               </span>
             </div>
-            <h1 className="font-display text-2xl font-bold text-slate-900">Hoş geldiniz</h1>
-            <p className="mt-2 text-sm text-slate-500">Hesabınıza giriş yapın</p>
+            <h1 className="font-display text-2xl font-bold text-slate-900">Giriş</h1>
+            <p className="mt-2 text-sm text-slate-500">E-posta ve şifrenle devam et</p>
           </div>
 
           <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-card">

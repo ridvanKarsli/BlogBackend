@@ -10,7 +10,7 @@ public class PostRequest {
     private String slug;
     private String content;
     private String excerpt;
-    private String status; // DRAFT veya PUBLISHED
+    private String status;
     private String seoTitle;
     private String seoDescription;
     private String canonicalUrl;

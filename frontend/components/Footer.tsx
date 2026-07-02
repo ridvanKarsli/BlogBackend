@@ -14,7 +14,7 @@ export default function Footer() {
               Blog
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-500">
-              Fikirler, hikayeler ve içgörüler. Okumak, keşfetmek ve paylaşmak için modern bir blog deneyimi.
+              Kişisel blog sitesi.
             </p>
           </div>
 
